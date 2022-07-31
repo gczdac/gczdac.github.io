@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>Chen&#39;s Blog</title>
+  
+  
+  <link href="http://gczdac.github.io/atom.xml" rel="self"/>
+  
+  <link href="http://gczdac.github.io/"/>
+  <updated>2022-07-31T10:07:27.890Z</updated>
+  <id>http://gczdac.github.io/</id>
+  
+  <author>
+    <name>gczdac</name>
+    
+  </author>
+  
+  <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>[算法] 秦九韶算多项式（霍纳法则）</title>
+    <link href="http://gczdac.github.io/2022/07/31/polynomial/"/>
+    <id>http://gczdac.github.io/2022/07/31/polynomial/</id>
+    <published>2022-07-31T08:08:50.000Z</published>
+    <updated>2022-07-31T10:07:27.890Z</updated>
+    
+    <content type="html"><![CDATA[<blockquote><p><strong>目录</strong></p><ul><li><p>问题提出</p></li><li><p>常规方法</p></li><li><p>秦九韶的方法</p></li><li><p>小结</p></li></ul></blockquote><h2 id="1-问题提出"><a href="#1-问题提出" class="headerlink" title="1. 问题提出"></a><strong>1. 问题提出</strong></h2><p>我们都曾学习过多项式，比如 $f(x)=a_0+a_1x+a_2x^2+a_3x^3+a_4x^4$ 就是一个一元四次多项式，也可以很容易记得，一元 $n$ 次多项式的通式为$f(x)=a_0+a_1x+a_2x^2+…+a_nx^n$ ，也可以缩略表示为 $f(x)=\sum_{i=0}^na_ix^i$ 。对于这样的一元 $n$ 次多项式，我们要怎样求解？</p><span id="more"></span><h2 id="2-常规方法"><a href="#2-常规方法" class="headerlink" title="2. 常规方法"></a><strong>2. 常规方法</strong></h2><p>首先我们很容易想到，将多项式拆解计算，举例一元四次多项式，将其拆解，看做为 $f(x)=a_0+a_1 \times x+a_2 \times x \times  x+a_3 \times x \times x \times x+a_4 \times x \times x \times x \times x$  。这样我们需要计算 $0+1+2+3+4=10$ 次的乘法，和4次的加法，得到多项式结果。</p><p>推广开来，一元 $n$ 次多项式时，我们需要计算 $0+1+2+…+(n-2)+(n-1)+n=\frac{n(n+1)}{2}$ 次乘法，和 $n$ 次的加法，得到多项式的结果。</p><p><strong><em>那么用代码怎么实现？</em></strong></p><p>很容易地，使用两个for循环，就可以得到想要的结果，这个函数的基本操作为 <code>t = t * x;</code> ，时间复杂度为 $O(n^2)$，计算过程如下：</p><script type="math/tex; mode=display">\begin{align*}T(n) &= \sum_{i=0}^{n} \sum_{j=0}^{i}1\\&= \sum_{i=0}^{n}(i)\\&= \frac{n \times (n + 1)}{2}\\&= \frac{1}{2}n + \frac{1}{2}n^2\\&= O(\frac{\frac{1}{2}n^2}{\frac{1}{2}}) = O(n^2)\end{align*}</script><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//c语言</span></span><br><span class="line"><span class="type">double</span> <span class="title function_">polynomial</span><span class="params">(<span class="type">int</span> n, <span class="type">double</span> a[], <span class="type">double</span> x)</span></span><br><span class="line">&#123;</span><br><span class="line"><span class="type">double</span> t, result=<span class="number">0</span>;</span><br><span class="line"><span class="type">int</span> i, j;</span><br><span class="line"><span class="keyword">for</span> (i=<span class="number">0</span>; i&lt;=n; i++)</span><br><span class="line">&#123;</span><br><span class="line">t = <span class="number">1</span>;</span><br><span class="line"><span class="keyword">for</span> (j=<span class="number">0</span>; j&lt;i; j++)</span><br><span class="line">t = t * x;</span><br><span class="line">result = result + a[i] * t;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">return</span> result; </span><br><span class="line">&#125; </span><br></pre></td></tr></table></figure><p>或者是，将一个for循环改成递归，也可以实现，类似的，可以算出其时间复杂度为 $O(n^2)$。</p><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//c语言</span></span><br><span class="line"><span class="type">double</span> <span class="title function_">f</span><span class="params">(<span class="type">int</span> n, <span class="type">double</span> x)</span></span><br><span class="line">&#123;</span><br><span class="line"><span class="type">double</span> result = x;</span><br><span class="line"><span class="keyword">if</span> (n == <span class="number">0</span>)</span><br><span class="line"><span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line"><span class="keyword">else</span> <span class="keyword">if</span> (n == <span class="number">1</span>)</span><br><span class="line"><span class="keyword">return</span> x;</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line"><span class="keyword">return</span> result * g(--n, result);</span><br><span class="line">&#125;</span><br><span class="line"><span class="type">double</span> <span class="title function_">polynomial</span><span class="params">( <span class="type">int</span> n, <span class="type">double</span> a[], <span class="type">double</span> x )</span></span><br><span class="line">&#123;</span><br><span class="line"><span class="type">double</span> result=<span class="number">0</span>;</span><br><span class="line"><span class="type">int</span> i;</span><br><span class="line"><span class="keyword">for</span> (i=<span class="number">0</span>; i&lt;=n; i++)</span><br><span class="line">&#123;</span><br><span class="line">result = result + a[i] * f(i, x);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">return</span> result; </span><br><span class="line">&#125; </span><br></pre></td></tr></table></figure><p>当然，不管是使用两个for循环，或者是使用递归，都没有办法改变 $O(n^2)$ 的时间复杂度。那么，就没有更简便的方法了吗？</p><h2 id="3-秦九韶的方法"><a href="#3-秦九韶的方法" class="headerlink" title="3. 秦九韶的方法"></a><strong>3. 秦九韶的方法</strong></h2><p>我国古代伟大的数学家秦九韶，就想出了一个办法，用于简化多项式计算，这个方法就叫秦九韶算法，在国际上称为霍纳法则。</p><p>以一元四次多项式为例，我们可以将其看为：</p><script type="math/tex; mode=display">\begin{align*}f(x)&=a_0+a_1x+a_2x^2+a_3x^3+a_4x^4\\&=a_0x^0+a_1x^1+a_2x^2+a_3x^3+a_4x^4\\&=a_0+x(a_1x^0+a_2x^1+a_3x^2+a_4x^3)\\&=a_0+x(a_1+x(a_2x^0+a_3x^1+a_4x^2))\\&=a_0+x(a_1+x(a_2+x(a_3x^0+a_4x^1)))\\&=a_0+x(a_1+x(a_2+x(a_3+a_4x)))\end{align*}</script><p>即先计算最内层多项式的值，再逐一向外层计算，这样我们就只需要进行4次乘法，4次加法，就可以算出一元四次多项式的值。</p><p>可以推广开来，带入一元 $n$ 次多项式：</p><script type="math/tex; mode=display">\begin{align*}f(x)&=a_0+a_1x+a_2x^2+...+a_nx^n\\&=a_0x^0+a_1x^1+a_2x^2+...+a_nx^n\\&=a_0+x(a_1x^0+a_2x^1+...+a_nx^n)\\&=a_0+x(a_1+x(a_2x^0+...+a_nx^n))\\&=a_0+x(a_1+x(a_2+...+x(a_{n-1}x^0+a_nx^1))...)\\&=a_0+x(a_1+x(a_2+...+x(a_{n-1}+a_nx))...)\end{align*}</script><p>很容易就发现，每一层的运算都是 $a_{i-1}+a_ix$ ，所以可以使用一个for循环实现，将时间复杂度降为 $O(n)$ 。</p><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//c语言</span></span><br><span class="line"><span class="type">double</span> <span class="title function_">polynomial</span><span class="params">(<span class="type">int</span> n, <span class="type">double</span> a[], <span class="type">double</span> x)</span></span><br><span class="line">&#123;</span><br><span class="line"><span class="type">double</span> result=a[n];</span><br><span class="line"><span class="type">int</span> i;</span><br><span class="line"><span class="keyword">for</span> (i=n; i&gt;<span class="number">0</span>; i--)</span><br><span class="line">&#123;</span><br><span class="line">result = result * x + a[i<span class="number">-1</span>];</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">return</span> result; </span><br><span class="line">&#125; </span><br></pre></td></tr></table></figure><h2 id="4-小结"><a href="#4-小结" class="headerlink" title="4. 小结"></a><strong>4. 小结</strong></h2><p>本来应该是到第三点就结束了，但是思来想去，还是做个复盘，给自己一个交代。</p><p>好久没有写题目了，不记得上次写题在什么时候了。重新捡起来必然是痛苦的，但是收获一定也是让我开心的。那就让这个，数论中基础的秦九韶算法，开启我复健的第一步吧。</p><p>虽良宵苦短，但来日方长，少女前进吧！</p><blockquote><p>我的微信公众号：</p><div><center>  <img src="\images\wechat.jpg" alt="wechat.jpg" style="zoom:50%;" />  <br>  扫一扫关注我的微信</center> </div></blockquote>]]></content>
+    
+    
+    <summary type="html">&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;目录&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;问题提出&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;常规方法&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;秦九韶的方法&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;小结&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&quot;1-问题提出&quot;&gt;&lt;a href=&quot;#1-问题提出&quot; class=&quot;headerlink&quot; title=&quot;1. 问题提出&quot;&gt;&lt;/a&gt;&lt;strong&gt;1. 问题提出&lt;/strong&gt;&lt;/h2&gt;&lt;p&gt;我们都曾学习过多项式，比如 $f(x)=a_0+a_1x+a_2x^2+a_3x^3+a_4x^4$ 就是一个一元四次多项式，也可以很容易记得，一元 $n$ 次多项式的通式为$f(x)=a_0+a_1x+a_2x^2+…+a_nx^n$ ，也可以缩略表示为 $f(x)=\sum_{i=0}^na_ix^i$ 。对于这样的一元 $n$ 次多项式，我们要怎样求解？&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="算法" scheme="http://gczdac.github.io/categories/%E7%AE%97%E6%B3%95/"/>
+    
+    
+    <category term="算法" scheme="http://gczdac.github.io/tags/%E7%AE%97%E6%B3%95/"/>
+    
+    <category term="多项式" scheme="http://gczdac.github.io/tags/%E5%A4%9A%E9%A1%B9%E5%BC%8F/"/>
+    
+  </entry>
+  
+</feed>
